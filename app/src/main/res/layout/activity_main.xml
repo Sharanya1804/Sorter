@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/app_background_gradient"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <!-- App Header Section -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="24dp"
+            android:background="@drawable/header_glass_card"
+            android:elevation="8dp"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:fontFamily="sans-serif-medium"
+                android:text="Sort Visualizer Pro"
+                android:textColor="@color/glass_text"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.05" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="4dp"
+                android:alpha="0.8"
+                android:fontFamily="sans-serif-light"
+                android:text="Advanced Algorithm Visualization"
+                android:textColor="@color/glass_text_secondary"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <!-- Algorithm Selection Section -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/neo_card_background"
+            android:elevation="6dp"
+            android:orientation="vertical"
+            android:padding="18dp">
+
+            <TextView
+                android:id="@+id/tvSelectedAlgorithm"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/algorithm_chip_background"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="center"
+                android:padding="12dp"
+                android:text="Selected: Bubble Sort"
+                android:textColor="@color/glass_text_secondary"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btnSelectAlgorithm"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:background="@drawable/futuristic_button_primary"
+                android:fontFamily="sans-serif-medium"
+                android:text="SELECT ALGORITHM"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:elevation="10dp" />
+        </LinearLayout>
+
+        <!-- Data Display Section -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/data_display_card"
+            android:elevation="4dp"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/tvUnsorted"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/data_chip_unsorted"
+                android:fontFamily="monospace"
+                android:padding="12dp"
+                android:text="UNSORTED: "
+                android:textColor="@color/accent_orange"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <!-- **UPDATED: Enhanced Bar Graph Container with better fitting** -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="340dp"
+            android:layout_marginBottom="24dp"
+            android:background="@drawable/visualization_container"
+            android:elevation="8dp"
+            android:padding="8dp">
+
+            <!-- Color Legend -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top"
+                android:background="@drawable/legend_background"
+                android:orientation="horizontal"
+                android:padding="8dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:drawableLeft="@drawable/legend_normal"
+                    android:drawablePadding="4dp"
+                    android:fontFamily="sans-serif-light"
+                    android:gravity="center"
+                    android:text="Normal"
+                    android:textColor="@color/legend_text"
+                    android:textSize="11sp" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:drawableLeft="@drawable/legend_comparing"
+                    android:drawablePadding="4dp"
+                    android:fontFamily="sans-serif-light"
+                    android:gravity="center"
+                    android:text="Comparing"
+                    android:textColor="@color/legend_text"
+                    android:textSize="11sp" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:drawableLeft="@drawable/legend_swapped"
+                    android:drawablePadding="4dp"
+                    android:fontFamily="sans-serif-light"
+                    android:gravity="center"
+                    android:text="Swapped"
+                    android:textColor="@color/legend_text"
+                    android:textSize="11sp" />
+            </LinearLayout>
+
+            <!-- **UPDATED: Bar graph with margin for better container fit** -->
+            <com.example.sorter.BarGraphView
+                android:id="@+id/barGraph"
+                android:layout_width="346dp"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="4dp"
+                android:layout_marginTop="40dp"
+                android:layout_marginRight="4dp"
+                android:layout_marginBottom="8dp" />
+        </FrameLayout>
+
+        <!-- Enhanced Delay Controls -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/control_panel_background"
+            android:elevation="4dp"
+            android:orientation="horizontal"
+            android:padding="18dp">
+
+            <TextView
+                android:id="@+id/delayText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/delay_indicator_background"
+                android:fontFamily="sans-serif-medium"
+                android:padding="8dp"
+                android:text="300ms"
+                android:textColor="@color/accent_cyan"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <SeekBar
+                android:id="@+id/seekBar"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:max="1000"
+                android:progress="500"
+                android:progressTint="@color/primary_gradient_start"
+                android:thumbTint="@color/accent_cyan"
+                android:secondaryProgressTint="@color/secondary_muted" />
+        </LinearLayout>
+
+        <!-- Action Buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/btnChooseFile"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/futuristic_button_secondary"
+                android:fontFamily="sans-serif-medium"
+                android:text="📁 CHOOSE DATA FILE"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+
+                android:elevation="5dp" />
+
+            <Button
+                android:id="@+id/btnSort"
+                android:layout_width="match_parent"
+                android:layout_height="58dp"
+                android:background="@drawable/futuristic_button_action"
+                android:fontFamily="sans-serif-bold"
+                android:text="START SORTING"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:elevation="5dp" />
+        </LinearLayout>
+
+        <!-- Results Section -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/results_card_background"
+            android:elevation="4dp"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/tvSorted"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/data_chip_sorted"
+                android:fontFamily="monospace"
+                android:padding="12dp"
+                android:text="SORTED: "
+                android:textColor="@color/accent_green"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="42dp" />
+
+    </LinearLayout>
+
+</ScrollView>
+
+

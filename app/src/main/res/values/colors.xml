@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 2025 Futuristic Color Palette -->
+    <color name="primary_gradient_start">#6200EA</color>
+    <color name="primary_gradient_end">#3F51B5</color>
+    <color name="primary_bright">#7C4DFF</color>
+
+    <color name="secondary_gradient_start">#00BCD4</color>
+    <color name="secondary_gradient_end">#009688</color>
+    <color name="secondary_muted">#4DB6AC</color>
+
+    <color name="accent_cyan">#00E5FF</color>
+    <color name="accent_orange">#FF6D00</color>
+    <color name="accent_green">#00E676</color>
+    <color name="accent_pink">#E91E63</color>
+
+    <!-- Transparent Glass Effects -->
+    <color name="glass_white">#1AFFFFFF</color>
+    <color name="glass_black">#1A000000</color>
+    <color name="glass_text">#FFFFFF</color>
+    <color name="glass_text_secondary">#B3FFFFFF</color>
+
+    <!-- Background Gradients -->
+    <color name="background_dark">#0A0A0F</color>
+    <color name="background_mid">#1A1A2E</color>
+    <color name="background_light">#16213E</color>
+
+    <!-- Neutral Colors -->
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="legend_text">#E0E0E0</color>
+
+    <!-- Bar Graph Colors -->
+    <color name="bar_normal">#83EB85</color>
+    <color name="bar_comparing">#FF9800</color>
+    <color name="bar_swapped">#8B0000</color>
+    <color name="bar_negative">#83EB85</color>
+    <color name="dark_red">#8B0000</color>
+
+    <!-- Button Shadow Colors -->
+    <color name="primary_shadow">#4D6200EA</color>
+    <color name="primary_shadow_dark">#806200EA</color>
+    <color name="secondary_shadow">#4D00BCD4</color>
+    <color name="secondary_shadow_dark">#8000BCD4</color>
+    <color name="action_shadow">#4D7C4DFF</color>
+    <color name="action_shadow_dark">#807C4DFF</color>
+
+
+</resources>
