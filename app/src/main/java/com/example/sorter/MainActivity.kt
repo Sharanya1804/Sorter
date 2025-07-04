@@ -23,11 +23,17 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
+/**
+ * MainActivity is the primary activity for the sorting visualizer application.
+ * It allows users to select a sorting algorithm, choose a file containing numbers,
+ * visualize the sorting process on a bar graph, and control the animation speed.
+ */
 class MainActivity : ComponentActivity() {
-    private val PICK_FILE = 1
-    private var numbers: List<Int> = listOf()
-    private lateinit var barGraph: BarGraphView
-    private lateinit var seekBar: SeekBar
+
+    private val PICK_FILE = 1 // Request code for picking a file
+    private var numbers: List<Int> = listOf() // The list of numbers to be sorted
+    private lateinit var barGraph: BarGraphView // Custom view to display numbers as a bar graph
+    private lateinit var seekBar: SeekBar // Controls animation delay
     private lateinit var delayText: TextView
     private lateinit var tvUnsorted: TextView
     private lateinit var tvSorted: TextView
@@ -35,14 +41,16 @@ class MainActivity : ComponentActivity() {
     private lateinit var btnSelectAlgorithm: Button
     private lateinit var btnChooseFile: Button
     private lateinit var btnSort: Button
-    private var sortJob: Job? = null
-    private var delayMs = 300L
-    private var isSorted = false
-    private var selectedAlgorithm = SortingAlgorithm.BUBBLE_SORT
+    private var sortJob: Job? = null // Manages the sorting coroutine
+    private var delayMs = 300L // Delay in milliseconds for animation steps
+    private var isSorted = false // Flag to check if the current list is sorted
+    private var selectedAlgorithm = SortingAlgorithm.BUBBLE_SORT // Currently selected algorithm
 
-    // Animation management
-    private val activeAnimators = mutableSetOf<Animator>()
+    private val activeAnimators = mutableSetOf<Animator>() // Tracks active animators for cleanup
 
+    /**
+     * Enum defining available sorting algorithms with display names.
+     */
     enum class SortingAlgorithm(val displayName: String) {
         BUBBLE_SORT("Bubble Sort"),
         INSERTION_SORT("Insertion Sort"),
@@ -60,6 +68,7 @@ class MainActivity : ComponentActivity() {
         setupInitialAnimations()
     }
 
+    /** Initializes all UI components and sets their initial states. */
     private fun initializeViews() {
         barGraph = findViewById(R.id.barGraph)
         seekBar = findViewById(R.id.seekBar)
@@ -71,15 +80,14 @@ class MainActivity : ComponentActivity() {
         btnChooseFile = findViewById(R.id.btnChooseFile)
         btnSort = findViewById(R.id.btnSort)
 
-        // Setup initial values
-        seekBar.max=1000
+        seekBar.max = 1000
         seekBar.progress = delayMs.toInt()
         delayText.text = "${delayMs}ms"
         setColoredAlgorithmName(tvSelectedAlgorithm, "Selected: ${selectedAlgorithm.displayName}", selectedAlgorithm.displayName)
     }
 
+    /** Sets up initial entrance animations for key UI elements. */
     private fun setupInitialAnimations() {
-        // Animate UI elements on startup
         val views = listOf(tvSelectedAlgorithm, btnSelectAlgorithm, btnChooseFile, btnSort)
         views.forEachIndexed { index, view ->
             view.alpha = 0f
@@ -94,8 +102,8 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    /** Configures event listeners for UI interactions. */
     private fun setupEventListeners() {
-        // Enhanced delay slider with animation
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 if (fromUser) {
@@ -107,14 +115,10 @@ class MainActivity : ComponentActivity() {
             override fun onStopTrackingTouch(seekBar: SeekBar?) {}
         })
 
-        // Enhanced algorithm selection with animations
         btnSelectAlgorithm.setOnClickListener {
-            animateButtonPress(btnSelectAlgorithm) {
-                showAlgorithmSelectionDialog()
-            }
+            animateButtonPress(btnSelectAlgorithm) { showAlgorithmSelectionDialog() }
         }
 
-        // Enhanced file chooser with animations
         btnChooseFile.setOnClickListener {
             animateButtonPress(btnChooseFile) {
                 val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
@@ -125,14 +129,11 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        // Enhanced sort button with animations
         btnSort.setOnClickListener {
-            animateButtonPress(btnSort) {
-                startSorting()
-            }
+            animateButtonPress(btnSort) { startSorting() }
         }
 
-        // Back button handler
+        // Handles back button press to cancel sorting and reset UI
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 sortJob?.cancel()
@@ -141,8 +142,8 @@ class MainActivity : ComponentActivity() {
         })
     }
 
+    /** Animates a button press with a spring effect and executes an action. */
     private fun animateButtonPress(button: Button, action: () -> Unit) {
-        // Create spring animation for button press
         val scaleXAnimation = SpringAnimation(button, DynamicAnimation.SCALE_X, 0.95f)
         val scaleYAnimation = SpringAnimation(button, DynamicAnimation.SCALE_Y, 0.95f)
 
@@ -150,39 +151,32 @@ class MainActivity : ComponentActivity() {
             dampingRatio = SpringForce.DAMPING_RATIO_MEDIUM_BOUNCY
             stiffness = SpringForce.STIFFNESS_HIGH
         }
-
         scaleYAnimation.spring.apply {
             dampingRatio = SpringForce.DAMPING_RATIO_MEDIUM_BOUNCY
             stiffness = SpringForce.STIFFNESS_HIGH
         }
-
         scaleXAnimation.start()
         scaleYAnimation.start()
 
-        // Animate back to normal size and execute action
         button.postDelayed({
             val restoreXAnimation = SpringAnimation(button, DynamicAnimation.SCALE_X, 1f)
             val restoreYAnimation = SpringAnimation(button, DynamicAnimation.SCALE_Y, 1f)
-
             restoreXAnimation.spring.apply {
                 dampingRatio = SpringForce.DAMPING_RATIO_MEDIUM_BOUNCY
                 stiffness = SpringForce.STIFFNESS_MEDIUM
             }
-
             restoreYAnimation.spring.apply {
                 dampingRatio = SpringForce.DAMPING_RATIO_MEDIUM_BOUNCY
                 stiffness = SpringForce.STIFFNESS_MEDIUM
             }
-
             restoreXAnimation.start()
             restoreYAnimation.start()
-
             action()
         }, 100)
     }
 
+    /** Animates the delay text update to provide visual feedback. */
     private fun animateDelayTextUpdate() {
-        // Pulse animation for delay text
         delayText.animate()
             .scaleX(1.2f)
             .scaleY(1.2f)
@@ -198,6 +192,7 @@ class MainActivity : ComponentActivity() {
             .start()
     }
 
+    /** Displays a dialog for selecting a sorting algorithm. */
     private fun showAlgorithmSelectionDialog() {
         val algorithms = SortingAlgorithm.values()
         val algorithmNames = algorithms.map { it.displayName }.toTypedArray()
@@ -215,15 +210,14 @@ class MainActivity : ComponentActivity() {
             .show()
     }
 
+    /** Animates the algorithm selection text change. */
     private fun animateAlgorithmSelection() {
-        // Slide out old text
         tvSelectedAlgorithm.animate()
             .translationX(-100f)
             .alpha(0f)
             .setDuration(200)
             .withEndAction {
                 setColoredAlgorithmName(tvSelectedAlgorithm, "Selected: ${selectedAlgorithm.displayName}", selectedAlgorithm.displayName)
-                // Slide in new text
                 tvSelectedAlgorithm.translationX = 100f
                 tvSelectedAlgorithm.animate()
                     .translationX(0f)
@@ -235,6 +229,7 @@ class MainActivity : ComponentActivity() {
             .start()
     }
 
+    /** Initiates the sorting process based on the selected algorithm. */
     private fun startSorting() {
         if (numbers.isEmpty()) {
             showAnimatedToast("No numbers to sort!")
@@ -245,10 +240,9 @@ class MainActivity : ComponentActivity() {
             return
         }
 
-        // Animate sort button during sorting
-        animateSortingState(true)
+        animateSortingState(true) // Update button state
 
-        sortJob?.cancel()
+        sortJob?.cancel() // Cancel any ongoing sort
         sortJob = when (selectedAlgorithm) {
             SortingAlgorithm.BUBBLE_SORT -> startBubbleSort()
             SortingAlgorithm.INSERTION_SORT -> startInsertionSort()
@@ -258,26 +252,24 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    /** Updates the UI state of the sort button during and after sorting. */
     private fun animateSortingState(isSorting: Boolean) {
         if (isSorting) {
             btnSort.text = "SORTING..."
             btnSort.isEnabled = false
-            // Rotation animation removed - button stays static during sorting
         } else {
             btnSort.text = "START SORTING"
             btnSort.isEnabled = true
-            // No need to reset rotation since there's no rotation animation
             activeAnimators.forEach { it.cancel() }
             activeAnimators.clear()
         }
     }
 
-
+    /** Displays an animated Toast message. */
     private fun showAnimatedToast(message: String) {
         val toast = Toast.makeText(this, message, Toast.LENGTH_SHORT)
         toast.show()
 
-        // Find toast view and animate it
         val toastView = toast.view
         toastView?.let { view ->
             view.alpha = 0f
@@ -293,7 +285,9 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    // Simplified sorting algorithms without bar graph animations
+    // --- Sorting Algorithm Implementations ---
+    // Each function runs in a coroutine, updating the bar graph with delays for visualization.
+
     private fun startBubbleSort(): Job = lifecycleScope.launch {
         val mutableList = numbers.toMutableList()
         var swapped: Boolean
@@ -388,6 +382,7 @@ class MainActivity : ComponentActivity() {
         finishSorting(mutableList)
     }
 
+    /** Recursive helper for Quick Sort. */
     private suspend fun quickSortRecursive(arr: MutableList<Int>, low: Int, high: Int) {
         if (low < high) {
             val pivot = partition(arr, low, high)
@@ -396,6 +391,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    /** Partitions the array around a pivot for Quick Sort. */
     private suspend fun partition(arr: MutableList<Int>, low: Int, high: Int): Int {
         val pivot = arr[high]
         var i = low - 1
@@ -434,6 +430,7 @@ class MainActivity : ComponentActivity() {
         finishSorting(mutableList)
     }
 
+    /** Recursive helper for Merge Sort. */
     private suspend fun mergeSortRecursive(arr: MutableList<Int>, left: Int, right: Int) {
         if (left < right) {
             val mid = left + (right - left) / 2
@@ -443,6 +440,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    /** Merges two sorted sub-arrays for Merge Sort. */
     private suspend fun merge(arr: MutableList<Int>, left: Int, mid: Int, right: Int) {
         val leftArray = arr.subList(left, mid + 1).toMutableList()
         val rightArray = arr.subList(mid + 1, right + 1).toMutableList()
@@ -487,6 +485,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    /** Finalizes sorting visualization and updates UI after completion. */
     private fun finishSorting(sortedList: MutableList<Int>) {
         barGraph.numbers = sortedList.toList()
         barGraph.highlightIndices = null
@@ -498,6 +497,7 @@ class MainActivity : ComponentActivity() {
         showAnimatedToast("${selectedAlgorithm.displayName} complete!")
     }
 
+    /** Resets the UI to its initial state. */
     private fun resetUI() {
         numbers = listOf()
         barGraph.numbers = emptyList()
@@ -510,7 +510,9 @@ class MainActivity : ComponentActivity() {
         showAnimatedToast("Reset to initial state")
     }
 
-    // Utility functions for colored text
+    // --- Utility Functions ---
+
+    /** Sets the text of a TextView, coloring numeric parts. */
     private fun setColoredNumbers(textView: TextView, fullText: String) {
         val spannable = SpannableString(fullText)
         val regex = "\\d+".toRegex()
@@ -525,6 +527,7 @@ class MainActivity : ComponentActivity() {
         textView.text = spannable
     }
 
+    /** Sets the text of a TextView, coloring the algorithm name. */
     private fun setColoredAlgorithmName(textView: TextView, fullText: String, algorithmName: String) {
         val spannable = SpannableString(fullText)
         val startIndex = fullText.indexOf(algorithmName)
@@ -539,6 +542,7 @@ class MainActivity : ComponentActivity() {
         textView.text = spannable
     }
 
+    /** Handles the result from the file picker activity. */
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == PICK_FILE && resultCode == Activity.RESULT_OK) {
@@ -561,6 +565,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    /** Animates the display of loaded data (unsorted text and bar graph). */
     private fun animateDataLoaded() {
         tvUnsorted.alpha = 0f
         tvUnsorted.animate()
@@ -577,6 +582,7 @@ class MainActivity : ComponentActivity() {
             .start()
     }
 
+    /** Cleans up active animators when the activity is destroyed. */
     override fun onDestroy() {
         activeAnimators.forEach { it.cancel() }
         activeAnimators.clear()
